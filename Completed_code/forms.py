@@ -5,10 +5,10 @@ from wtforms.validators import DataRequired, AnyOf, URL
 
 class ShowForm(Form):
     artist_id = StringField(
-        'artist_id'
+        'artist_id',validators=[DataRequired()],
     )
     venue_id = StringField(
-        'venue_id'
+        'venue_id',validators=[DataRequired()],
     )
     start_time = DateTimeField(
         'start_time',
@@ -83,10 +83,10 @@ class VenueForm(Form):
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'phone',default="0535355512"
     )
     image_link = StringField(
-        'image_link'
+        'image_link',default="https://en.wikipedia.org/wiki/Flag_of_Saudi_Arabia#/media/File:Royal_Standard_of_Saudi_Arabia.svg"
     )
     genres = SelectMultipleField(
         # TODO implement enum restriction
@@ -114,7 +114,16 @@ class VenueForm(Form):
         ]
     )
     facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+        'facebook_link', validators=[URL()],default='www.google.com'
+    )
+    website = StringField(
+        'website', validators=[URL()],default='www.google.com'
+    )
+    seeking_talent = BooleanField(
+        'seeking_talent',default=False
+    )
+    seeking_description = StringField(
+        'seeking_description',default='empty'
     )
 
 class ArtistForm(Form):
@@ -182,10 +191,10 @@ class ArtistForm(Form):
     )
     phone = StringField(
         # TODO implement validation logic for state
-        'phone'
+        'phone',default='0535355512'
     )
     image_link = StringField(
-        'image_link'
+        'image_link',default="https://en.wikipedia.org/wiki/Flag_of_Saudi_Arabia#/media/File:Royal_Standard_of_Saudi_Arabia.svg"
     )
     genres = SelectMultipleField(
         # TODO implement enum restriction
@@ -214,7 +223,16 @@ class ArtistForm(Form):
     )
     facebook_link = StringField(
         # TODO implement enum restriction
-        'facebook_link', validators=[URL()]
+        'facebook_link', validators=[URL()],default='www.google.com'
+    )
+    website = StringField(
+        'website', validators=[URL()],default='www.google.com'
+    )
+    seeking_venue = SelectField(
+        'seeking_venue', default=False
+    )
+    seeking_description = StringField(
+        'seeking_description',default='empty'
     )
 
 # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
