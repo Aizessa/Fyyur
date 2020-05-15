@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_wtf import Form
-from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
+from wtforms import BooleanField,StringField, SelectField, SelectMultipleField, DateTimeField,IntegerField
 from wtforms.validators import DataRequired, AnyOf, URL
 
 class ShowForm(Form):
@@ -80,7 +80,7 @@ class VenueForm(Form):
         ]
     )
     address = StringField(
-        'address', validators=[DataRequired()]
+        'address', validators=[DataRequired()],default='name'
     )
     phone = StringField(
         'phone',default="0535355512"
@@ -189,9 +189,11 @@ class ArtistForm(Form):
             ('WY', 'WY'),
         ]
     )
+    address = StringField(
+        'address', validators=[DataRequired()],default='name'
+    )
     phone = StringField(
-        # TODO implement validation logic for state
-        'phone',default='0535355512'
+        'phone',default="0535355512"
     )
     image_link = StringField(
         'image_link',default="https://en.wikipedia.org/wiki/Flag_of_Saudi_Arabia#/media/File:Royal_Standard_of_Saudi_Arabia.svg"
@@ -221,15 +223,17 @@ class ArtistForm(Form):
             ('Other', 'Other'),
         ]
     )
+
     facebook_link = StringField(
-        # TODO implement enum restriction
+        
         'facebook_link', validators=[URL()],default='www.google.com'
     )
+
     website = StringField(
         'website', validators=[URL()],default='www.google.com'
     )
-    seeking_venue = SelectField(
-        'seeking_venue', default=False
+    seeking_venue = BooleanField(
+        'seeking_venue',default=False
     )
     seeking_description = StringField(
         'seeking_description',default='empty'
