@@ -5,6 +5,7 @@
 import json
 import dateutil.parser
 import babel
+from sqlalchemy import func
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
@@ -69,9 +70,12 @@ class Artist(db.Model):
 
 class Show(db.Model):
   __tablename__ = 'Show'
-  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable = False,primary_key=True)
-  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable = False,primary_key=True)
+  id = db.Column(db.Integer, primary_key=True)
+  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable = False)
+  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable = False)
   start_time = db.Column(db.DateTime )
+# in the beginning i created show without id and i made Artist and venue ids as primary keys and it was wrong
+# so i made change to the database via migration to look like this
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -142,7 +146,7 @@ def search_venues():
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
   search_term = request.form.get('search_term', '')
-  searchresults = db.session.query(Venue).filter(Venue.name.contains(f'%{search_term}%')).all()
+  searchresults = db.session.query(Venue).filter(Venue.name.ilike(f'%{search_term}%')).all()
   data = []
   for r in searchresults:
     data.append({
@@ -174,25 +178,25 @@ def show_venue(venue_id):
 
   for u in upcoming:
     upcomingShows.append({
-      "artist_id": p.artist.id,
-      "artist_name": p.artist.name,
-      "artist_image_link": p.artist.image_link,
-      "start_time": p.start_time
+      "artist_id": u.Artist.id,
+      "artist_name": u.Artist.name,
+      "artist_image_link": u.Artist.image_link,
+      "start_time": u.start_time.strftime("%Y-%m-%d, %H:%M:%S") # there were problem in time in the whole project i fixed after the review
     })
 
   for p in past:
     pastShows.append({
-      "artist_id": p.artist.id,
-      "artist_name": p.artist.name,
-      "artist_image_link": p.artist.image_link,
-      "start_time": p.start_time
+      "artist_id": p.Artist.id,
+      "artist_name": p.Artist.name,
+      "artist_image_link": p.Artist.image_link,
+      "start_time": p.start_time.strftime("%Y-%m-%d, %H:%M:%S")
     })
 
 
   data=[{
     "id": venue.id,
     "name": venue.name,
-    "genres": venue.genres,
+    "genres": (venue.genres),
     "address": venue.address,
     "city": venue.city,
     "state": venue.state,
@@ -231,7 +235,7 @@ def create_venue_submission():
     state=VenueForm().state.data
     address=VenueForm().address.data
     phone=VenueForm().phone.data
-    genres=VenueForm().genres.data
+    genres=','.join(VenueForm().genres.data)
     facebook_link=VenueForm().facebook_link.data
     website=VenueForm().website.data
     image_link=VenueForm().image_link.data
@@ -300,7 +304,7 @@ def search_artists():
   # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
   # search for "band" should return "The Wild Sax Band".
   search_term = request.form.get('search_term', '')
-  searchresults = db.session.query(Artist).filter(Artist.name.contains(f'%{search_term}%')).all()
+  searchresults = db.session.query(Artist).filter(Artist.name.ilike(f'%{search_term}%')).all()
   data = []
   for r in searchresults:
     data.append({
@@ -332,25 +336,25 @@ def show_artist(artist_id):
   for u in upcoming:
     #x = Venue.query.filter_by(id=u.venue_id).first()
     upcomingShows.append({
-      "venue_id": u.venue_id,
+      "venue_id": u.Venue.id,
       "venue_name": u.Venue.name,
       "venue_image_link": u.Venue.image_link,
-      "start_time": u.start_time
+      "start_time": (u.start_time.strftime("%Y-%m-%d, %H:%M:%S"))
     })
 
   for p in past:
     #x = Venue.query.filter_by(id=p.venue_id).first()
     pastShows.append({
-      "venue_id": p.venue_id,
+      "venue_id": p.Venue.id,
       "venue_name": p.Venue.name,
       "venue_image_link": p.Venue.image_link,
-      "start_time": p.start_time
+      "start_time": (p.start_time.strftime("%Y-%m-%d, %H:%M:%S"))
     })
 
   data=[{
     "id":Art.id ,
     "name": Art.name,
-    "genres": Art.genres,
+    "genres": (Art.genres),
     "city": Art.city,
     "state":Art.state ,
     "phone":Art.phone ,
@@ -508,7 +512,7 @@ def create_artist_submission():
     state=ArtistForm().state.data
     #address=ArtistForm().address.data
     phone=ArtistForm().phone.data
-    genres=ArtistForm().genres.data
+    genres=','.join(ArtistForm().genres.data)
     facebook_link=ArtistForm().facebook_link.data
     website=ArtistForm().website.data
     image_link=ArtistForm().image_link.data
@@ -556,7 +560,7 @@ def shows():
       "artist_id": i.artist_id,
       "artist_name": art.name,
       "artist_image_link": art.image_link,
-      "start_time": i.start_time
+      "start_time": (i.start_time.strftime("%Y-%m-%d, %H:%M:%S"))
     })
 
   return render_template('pages/shows.html', shows=data)
@@ -575,9 +579,11 @@ def create_show_submission():
   error = False
   try:
     show = Show()
-    show.artist_id = request.form['artist_id']
-    show.venue_id = request.form['venue_id']
-    show.start_time = request.form['start_time']
+    show.artist_id = ShowForm().artist_id.data
+    show.venue_id = ShowForm().venue_id.data
+    time = ShowForm().start_time.data
+    show.start_time =time.strftime("%Y-%m-%d, %H:%M:%S")
+     
     db.session.add(show)
     db.session.commit()
 
@@ -598,6 +604,8 @@ def create_show_submission():
   # e.g., flash('An error occurred. Show could not be listed.')
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
   return render_template('pages/home.html')
+
+# i wish everthing working well know
 
 @app.errorhandler(404)
 def not_found_error(error):
