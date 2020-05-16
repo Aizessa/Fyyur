@@ -1,0 +1,16 @@
+DataTime:
+https://www.programiz.com/python-programming/datetime/strftime
+
+obtain data from a form:
+https://stackoverflow.com/questions/35325287/flask-wtforms-how-do-i-get-a-form-value-back-into-python
+request.form['name']
+Form.name.data
+https://www.youtube.com/watch?v=f8qvLBvrIFI
+https://www.youtube.com/watch?v=-O9NMdvWmE8
+
+search term:
+https://docs.sqlalchemy.org/en/13/orm/internals.html?highlight=ilike#sqlalchemy.orm.attributes.QueryableAttribute.ilike
+
+join:
+https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_orm_working_with_joins.htm
+https://kite.com/python/docs/sqlalchemy.orm.query.Query.join
