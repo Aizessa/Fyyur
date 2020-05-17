@@ -6,7 +6,7 @@ import json
 import dateutil.parser
 import babel
 from sqlalchemy import func
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for,flash
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 import logging
@@ -379,36 +379,13 @@ def edit_artist(artist_id):
   form = ArtistForm()
   Art = Artist.query.get(artist_id)
 
-  form.name.data = Art.name,
-  form.genres.data =  Art.genres,
-  form.city.data =  Art.city,
-  form.state.data =  Art.state,
-  form.phone.data =  Art.phone,
-  form.website.data =  Art.website,
-  form.facebook_link.data =  Art.facebook_link,
-  form.seeking_venue =  Art.seeking_venue,
-  form.seeking_description =  Art.seeking_description,
-  form.image_link = Art.image_link
+
   
-  
-  artist={
-    "id": Art.id,
-    "name": Art.name,
-    "genres": Art.genres,
-    "city": Art.city,
-    "state": Art.state,
-    "phone": Art.phone,
-    "website": Art.website,
-    "facebook_link": Art.facebook_link,
-    "seeking_venue": Art.seeking_venue,
-    "seeking_description": Art.seeking_description,
-    "image_link": Art.image_link
-  }
-     #form = ArtistForm(obj=Art)
-    #if form.validate_on_submit():
-        #form.populate_obj(Art)
-        #db.session.add(Art)
-        #db.session.commit()
+  form = ArtistForm(obj=Art)
+  if form.validate_on_submit():
+    form.populate_obj(Art)
+    #db.session.add(Art)
+    #db.session.commit()
   
   # TODO: populate form with fields from artist with ID <artist_id>
   return render_template('forms/edit_artist.html', form=form, artist=Art)
@@ -427,14 +404,14 @@ def edit_artist_submission(artist_id):
   Art.phone=form.phone.data
   Art.website = form.website.data
   Art.facebook_link = form.facebook_link.data
-  Art.seeking_venue = form.seeking_venue
-  Art.seeking_description = form.seeking_description
-  Art.image_link = form.image_link
+  Art.seeking_venue = form.seeking_venue.data
+  Art.seeking_description = form.seeking_description.data
+  Art.image_link = form.image_link.data
+  db.session.commit()
   #form = ArtistForm(obj=Art)
-    #if form.validate_on_submit():
-      #form.populate_obj(Art)
-      #db.session.add(Art)
-      #db.session.commit()
+  #if form.validate_on_submit():
+    #form.populate_obj(Art)
+    #db.session.commit()
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
@@ -442,32 +419,9 @@ def edit_artist_submission(artist_id):
 def edit_venue(venue_id):
   form = VenueForm()
   Art = Venue.query.get(venue_id)
-
-  form.name.data = Art.name,
-  form.genres.data =  Art.genres,
-  form.city.data =  Art.city,
-  form.state.data =  Art.state,
-  form.phone.data =  Art.phone,
-  form.website.data =  Art.website,
-  form.facebook_link.data =  Art.facebook_link,
-  form.seeking_talent =  Art.seeking_venue,
-  form.seeking_description =  Art.seeking_description,
-  form.image_link = Art.image_link,
-  form.address.data = Art.address
-  venue={
-    "id": 1,
-    "name": "The Musical Hop",
-    "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
-    "address": "1015 Folsom Street",
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "123-123-1234",
-    "website": "https://www.themusicalhop.com",
-    "facebook_link": "https://www.facebook.com/TheMusicalHop",
-    "seeking_talent": True,
-    "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
-    "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
-  }
+  form = ArtistForm(obj=Art)
+  if form.validate_on_submit():
+    form.populate_obj(Art)
   # TODO: populate form with values from venue with ID <venue_id>
   return render_template('forms/edit_venue.html', form=form, venue=Art)
 
@@ -477,18 +431,19 @@ def edit_venue_submission(venue_id):
   # venue record with ID <venue_id> using the new attributes
   form = VenueForm()
   Art = Venue.query.get(venue_id)
-
-  Art.name=form.name.data,
-  Art.genres=form.genres.data,
-  Art.city=form.city.data,
-  Art.state=form.state.data,
-  Art.phone=form.phone.data,
-  Art.website = form.website.data,
-  Art.facebook_link = form.facebook_link.data,
-  Art.seeking_talent = form.seeking_talent.data,
-  Art.seeking_description = form.seeking_description.data,
-  Art.image_link = form.image_link,
+  
+  Art.name=form.name.data
+  Art.genres=form.genres.data
+  Art.city=form.city.data
+  Art.state=form.state.data
+  Art.phone=form.phone.data
+  Art.website = form.website.data
+  Art.facebook_link = form.facebook_link.data
+  Art.seeking_talent = form.seeking_talent.data
+  Art.seeking_description = form.seeking_description.data
+  Art.image_link = form.image_link.data
   Art.address = form.address.data
+  db.session.commit()
   return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
