@@ -8,6 +8,10 @@ Form.name.data
 https://www.youtube.com/watch?v=f8qvLBvrIFI
 https://www.youtube.com/watch?v=-O9NMdvWmE8
 
+edit:
+https://stackoverflow.com/questions/23712986/pre-populate-a-wtforms-in-flask-with-data-from-a-sqlalchemy-object
+
+
 search term:
 https://docs.sqlalchemy.org/en/13/orm/internals.html?highlight=ilike#sqlalchemy.orm.attributes.QueryableAttribute.ilike
 
